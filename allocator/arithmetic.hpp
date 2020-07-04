@@ -24,6 +24,9 @@ namespace allocator
     DivisionResult divide(std::size_t x, std::size_t y);
 
 
+    DivisionResult divided_by_bits_in_byte(std::size_t bits_count);
+
+
     std::size_t next_power_of_two(std::size_t x);
 
 

@@ -32,6 +32,12 @@ namespace allocator
     }
 
 
+    DivisionResult divided_by_bits_in_byte(std::size_t bits_count)
+    {
+        return divide(bits_count, BITS_IN_BYTE);
+    }
+
+
     std::size_t next_power_of_two(std::size_t x)
     {
         assert(x > 0);
