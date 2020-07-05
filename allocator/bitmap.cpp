@@ -65,7 +65,9 @@ namespace allocator
         const auto pair = divided_by_bits_in_byte(index);
 
         return { bits[pair.quotient],
-                 0b10000000 >> pair.remainder };
+                 static_cast<unsigned char>(
+                     0b10000000 >> pair.remainder
+                 ) };
     }
 
 
