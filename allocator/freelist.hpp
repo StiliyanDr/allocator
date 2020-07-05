@@ -1,6 +1,7 @@
 #ifndef __FREE_LIST_HEADER_INCLUDED__
 #define __FREE_LIST_HEADER_INCLUDED__
 
+#include <cstddef>
 #include <cstdint>
 
 
