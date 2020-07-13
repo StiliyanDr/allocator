@@ -15,13 +15,38 @@ namespace allocator
         using PtrValueType = intptr_t;
 
     public:
+        BuddyAllocator();
         BuddyAllocator(void* memory, std::size_t size);
-        BuddyAllocator(BuddyAllocator&&);
-        BuddyAllocator& operator=(BuddyAllocator&&);
+        BuddyAllocator(BuddyAllocator&& source);
+        BuddyAllocator& operator=(BuddyAllocator&& rhs);
 
         void* allocate(std::size_t size);
         void deallocate(void* block);
         void deallocate(void* block, std::size_t size);
+
+        bool manages_memory() const
+        {
+            return free_lists != nullptr;
+        }
+
+    private:
+        static PtrValueType value_of_pointer(void* p)
+        {
+            return reinterpret_cast<PtrValueType>(p);
+        }
+
+        static void* as_pointer(PtrValueType p)
+        {
+            return reinterpret_cast<void*>(p);
+        }
+
+    private:
+        void swap_contents_with(BuddyAllocator& other);
+
+        void clear()
+        {
+            free_lists = nullptr;
+        }
 
     private:
         PtrValueType start;
