@@ -56,6 +56,11 @@ namespace allocator
         }
 
     private:
+        static const std::size_t LEAF_SIZE = 128;
+        static const std::size_t ALIGNMENT_REQUIREMENT =
+            alignof(std::max_align_t);
+
+    private:
         PtrValueType start;
         std::size_t size;
         std::size_t levels_count;
