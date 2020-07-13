@@ -14,6 +14,13 @@ namespace allocator
     {
         using PtrValueType = intptr_t;
 
+        struct MemoryDescriptor
+        {
+            void* start;
+            std::size_t size;
+            std::size_t wasted_bytes_at_end;
+        };
+
     public:
         BuddyAllocator();
         BuddyAllocator(void* memory, std::size_t size);
