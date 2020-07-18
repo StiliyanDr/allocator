@@ -51,8 +51,7 @@ namespace allocator
 
     inline std::size_t parent_of(std::size_t index)
     {
-        assert(index > 0);
-        return (index - 1) / 2;
+        return index != 0 ? (index - 1) / 2 : 0;
     }
 
 
