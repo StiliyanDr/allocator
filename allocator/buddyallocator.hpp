@@ -98,9 +98,20 @@ namespace allocator
                                    std::size_t last_allocated_block,
                                    std::size_t last_allocated_parent);
         void* to_address(std::size_t index, std::size_t level) const;
+        void* allocate_block_at(std::size_t level);
+        int level_for_block_with(std::size_t size) const;
+        std::size_t index_at(std::size_t level, void* ptr) const;
+        std::size_t index_of(void* ptr, std::size_t level) const;
         void flip_free_map_at(std::size_t index);
         bool free_map_at(std::size_t index) const;
         void swap_contents_with(BuddyAllocator& other);
+
+        std::size_t level_for_block_with_power_of_two_size(
+            std::size_t s
+        ) const
+        {
+            return log2(size / s);
+        }
 
         std::size_t size_at(std::size_t level) const
         {

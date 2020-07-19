@@ -63,6 +63,7 @@ namespace allocator
                                        LEAF_SIZE,
                                        memory,
                                        size);
+
         if (result != nullptr)
         {
             return result;
@@ -344,6 +345,89 @@ namespace allocator
         std::swap(this->free_lists, other.free_lists);
         std::swap(this->split_map, other.split_map);
         std::swap(this->free_map, other.free_map);
+    }
+
+
+    void* BuddyAllocator::allocate(std::size_t size)
+    {
+        auto block = static_cast<void*>(nullptr);
+
+        if (manages_memory())
+        {
+            const auto level = level_for_block_with(size);
+
+            if (level != -1)
+            {
+                assert(level >= 0);
+                assert(level < levels_count);
+                block = allocate_block_at(level);
+            }
+        }
+
+        return block;
+    }
+
+
+    int BuddyAllocator::level_for_block_with(std::size_t size) const
+    {
+        if (size <= LEAF_SIZE)
+        {
+            return levels_count - 1;
+        }
+        else if (size <= this->size)
+        {
+            return level_for_block_with_power_of_two_size(
+                next_power_of_two(size)
+            );
+        }
+        else
+        {
+            return -1;
+        }
+    }
+
+
+    void* BuddyAllocator::allocate_block_at(std::size_t level)
+    {
+        auto& free_blocks = free_lists[level];
+
+        if (free_blocks.is_empty())
+        {
+            if (level == 0)
+            {
+                return nullptr;
+            }
+            const auto block = allocate_block_at(level - 1);
+
+            if (block != nullptr)
+            {
+                split_map.flip(index_of(block, level - 1));
+                insert_in(free_blocks, block, add_to(block, size_at(level)));
+            }
+            else
+            {
+                return nullptr;
+            }
+        }
+
+        const auto result = free_blocks.extract();
+        flip_free_map_at(index_of(result, level));
+
+        return result;
+    }
+
+
+    std::size_t BuddyAllocator::index_of(void* ptr,
+                                         std::size_t level) const
+    {
+        return first_index_at(level) + index_at(level, ptr);
+    }
+
+
+    std::size_t BuddyAllocator::index_at(std::size_t level,
+                                         void* ptr) const
+    {
+        return (value_of_pointer(ptr) - start) / size_at(level);
     }
 
 }
