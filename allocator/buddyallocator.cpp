@@ -5,7 +5,6 @@
 #include <stdexcept>
 #include <utility>
 
-#include "arithmetic.hpp"
 #include "insufficientmemory.hpp"
 
 
@@ -428,6 +427,73 @@ namespace allocator
                                          void* ptr) const
     {
         return (value_of_pointer(ptr) - start) / size_at(level);
+    }
+
+
+    void BuddyAllocator::deallocate(void* block)
+    {
+        const auto level = level_of(block);
+        assert(level < levels_count);
+        free(block, level, index_of(block, level));
+    }
+
+
+    std::size_t BuddyAllocator::level_of(void* p) const
+    {
+        auto level = levels_count - 1;
+        auto index = index_of(p, level);
+
+        while (level > 0)
+        {
+            const auto parent = parent_of(index);
+
+            if (split_map.at(parent))
+            {
+                break;
+            }
+            else
+            {
+                --level;
+                index = parent;
+            }
+        }
+
+        return level;
+    }
+
+
+    void BuddyAllocator::free(void* block,
+                              std::size_t level,
+                              std::size_t index)
+    {
+        auto& free_blocks = free_lists[level];
+
+        if (free_map_at(index))
+        {
+            assert(level > 0);
+            const auto buddy_level_index =
+                to_level_index(buddy_of(index), level);
+            const auto buddy =
+                as_pointer(start + buddy_level_index * size_at(level));
+            free_blocks.remove(buddy);
+            const auto parent = parent_of(index);
+            split_map.flip(parent);
+            free(to_address(parent, level - 1), level - 1, parent);
+        }
+        else
+        {
+            free_blocks.insert(block);
+        }
+
+        flip_free_map_at(index);
+    }
+
+
+    void BuddyAllocator::deallocate(void* block, std::size_t size)
+    {
+        const auto level =
+            level_for_block_with_power_of_two_size(size);
+        free(block, level, index_of(block, level));
     }
 
 }

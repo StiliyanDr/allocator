@@ -4,6 +4,7 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "arithmetic.hpp"
 #include "bitmap.hpp"
 #include "freelist.hpp"
 
@@ -102,6 +103,8 @@ namespace allocator
         int level_for_block_with(std::size_t size) const;
         std::size_t index_at(std::size_t level, void* ptr) const;
         std::size_t index_of(void* ptr, std::size_t level) const;
+        void free(void* block, std::size_t level, std::size_t index);
+        std::size_t level_of(void* p) const;
         void flip_free_map_at(std::size_t index);
         bool free_map_at(std::size_t index) const;
         void swap_contents_with(BuddyAllocator& other);
