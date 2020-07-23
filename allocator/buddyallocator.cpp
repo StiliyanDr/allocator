@@ -99,7 +99,7 @@ namespace allocator
 
     void BuddyAllocator::set_levels_count()
     {
-        levels_count = log2(size / LEAF_SIZE);
+        levels_count = log2(size / LEAF_SIZE) + 1;
 
         if (levels_count < MIN_LEVELS_COUNT)
         {
