@@ -432,9 +432,12 @@ namespace allocator
 
     void BuddyAllocator::deallocate(void* block)
     {
-        const auto level = level_of(block);
-        assert(level < levels_count);
-        free(block, level, index_of(block, level));
+        if (manages_memory())
+        {
+            const auto level = level_of(block);
+            assert(level < levels_count);
+            free(block, level, index_of(block, level));
+        }
     }
 
 
@@ -491,9 +494,14 @@ namespace allocator
 
     void BuddyAllocator::deallocate(void* block, std::size_t size)
     {
-        const auto level =
-            level_for_block_with_power_of_two_size(size);
-        free(block, level, index_of(block, level));
+        if (manages_memory())
+        {
+            const auto level =
+                level_for_block_with(size);
+            assert(level >= 0);
+            assert(level < levels_count);
+            free(block, level, index_of(block, level));
+        }
     }
 
 }
