@@ -83,7 +83,7 @@ namespace allocator
     std::size_t buddy_of(std::size_t index)
     {
         assert(index > 0);
-        return index + is_even(index) ? -1 : 1;
+        return index + (is_even(index) ? -1 : 1);
     }
 
 }
