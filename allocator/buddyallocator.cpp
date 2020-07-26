@@ -351,7 +351,7 @@ namespace allocator
     {
         auto block = static_cast<void*>(nullptr);
 
-        if (manages_memory())
+        if (manages_memory() && size != 0)
         {
             const auto level = level_for_block_with(size);
 
@@ -369,6 +369,8 @@ namespace allocator
 
     int BuddyAllocator::level_for_block_with(std::size_t size) const
     {
+        assert(size > 0);
+
         if (size <= LEAF_SIZE)
         {
             return levels_count - 1;
