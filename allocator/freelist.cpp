@@ -1,6 +1,5 @@
 #include "freelist.hpp"
 
-#include <assert.h>
 #include <utility>
 
 
@@ -33,6 +32,7 @@ namespace allocator
 
     void FreeList::insert(void* block)
     {
+        validate_alignment_of(block);
         previous_to(block) = value_of_pointer(nullptr);
         next_to(block) = value_of_pointer(first);
 
@@ -48,6 +48,7 @@ namespace allocator
     void FreeList::remove(void* block)
     {
         assert(!is_empty());
+        validate_alignment_of(block);
         const auto previous = as_pointer(previous_to(block));
 
         if (previous != nullptr)

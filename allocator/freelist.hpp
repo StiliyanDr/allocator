@@ -1,6 +1,7 @@
 #ifndef __FREE_LIST_HEADER_INCLUDED__
 #define __FREE_LIST_HEADER_INCLUDED__
 
+#include <assert.h>
 #include <cstddef>
 #include <cstdint>
 
@@ -55,6 +56,11 @@ namespace allocator
         static void* as_pointer(PtrValueType p)
         {
             return reinterpret_cast<void*>(p);
+        }
+
+        static void validate_alignment_of(void* block)
+        {
+            assert(value_of_pointer(block) % alignof(std::max_align_t) == 0);
         }
 
     private:
