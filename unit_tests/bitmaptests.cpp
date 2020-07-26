@@ -5,9 +5,9 @@
 using namespace allocator;
 
 
-constexpr auto size = 8u;
-constexpr auto size_in_bits = 8 * size;
-unsigned char memory[size];
+constexpr auto SIZE = 8u;
+constexpr auto SIZE_IN_BITS = 8 * SIZE;
+unsigned char memory[SIZE];
 
 
 TEST_CASE("BitMap special methods", "[bit map][special methods]")
@@ -38,10 +38,10 @@ TEST_CASE("BitMap special methods", "[bit map][special methods]")
 
         SECTION("bits are initialised when size is positive")
         {
-            const auto map = BitMap(memory, size_in_bits, true);
+            const auto map = BitMap(memory, SIZE_IN_BITS, true);
 
             CHECK_FALSE(map.is_empty());
-            REQUIRE(map.get_size() == size_in_bits);
+            REQUIRE(map.get_size() == SIZE_IN_BITS);
             REQUIRE(map.at(0));
         }
 
@@ -60,11 +60,11 @@ TEST_CASE("BitMap special methods", "[bit map][special methods]")
 
         SECTION("from non-empty map")
         {
-            auto moved_from = BitMap(memory, size_in_bits);
+            auto moved_from = BitMap(memory, SIZE_IN_BITS);
             const auto moved_into = std::move(moved_from);
 
             CHECK(moved_from.is_empty());
-            CHECK(moved_into.get_size() == size_in_bits);
+            CHECK(moved_into.get_size() == SIZE_IN_BITS);
         }
 
     }
@@ -84,7 +84,7 @@ TEST_CASE("BitMap special methods", "[bit map][special methods]")
 
         SECTION("empty to non-empty")
         {
-            auto lhs = BitMap(memory, size_in_bits);
+            auto lhs = BitMap(memory, SIZE_IN_BITS);
             auto rhs = BitMap{};
 
             lhs = std::move(rhs);
@@ -96,19 +96,19 @@ TEST_CASE("BitMap special methods", "[bit map][special methods]")
         SECTION("non-empty to empty")
         {
             auto lhs = BitMap{};
-            auto rhs = BitMap(memory, size_in_bits);
+            auto rhs = BitMap(memory, SIZE_IN_BITS);
 
             lhs = std::move(rhs);
 
             CHECK(rhs.is_empty());
-            CHECK(lhs.get_size() == size_in_bits);
+            CHECK(lhs.get_size() == SIZE_IN_BITS);
         }
 
         SECTION("non-empty to non-empty")
         {
-            const auto rhs_size = size_in_bits / 4;
-            auto lhs = BitMap(memory, size_in_bits / 2);
-            auto rhs = BitMap(memory + (size / 2), rhs_size, true);
+            const auto rhs_size = SIZE_IN_BITS / 4;
+            auto lhs = BitMap(memory, SIZE_IN_BITS / 2);
+            auto rhs = BitMap(memory + (SIZE / 2), rhs_size, true);
 
             lhs = std::move(rhs);
 
@@ -124,7 +124,7 @@ TEST_CASE("BitMap special methods", "[bit map][special methods]")
 
 TEST_CASE("bit manipulation", "[bit map]")
 {
-    auto map = BitMap(memory, size_in_bits);
+    auto map = BitMap(memory, SIZE_IN_BITS);
     
     map.flip(1);
 
@@ -136,10 +136,10 @@ TEST_CASE("bit manipulation", "[bit map]")
 TEST_CASE("BitMap size related methods", "[bit map][size]")
 {
     const auto empty_map = BitMap{};
-    const auto map = BitMap(memory, size_in_bits);
+    const auto map = BitMap(memory, SIZE_IN_BITS);
 
     CHECK(empty_map.is_empty());
     CHECK(empty_map.get_size() == 0);
     CHECK_FALSE(map.is_empty());
-    CHECK(map.get_size() == size_in_bits);
+    CHECK(map.get_size() == SIZE_IN_BITS);
 }
