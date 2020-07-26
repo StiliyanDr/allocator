@@ -1,5 +1,6 @@
 #include "freelist.hpp"
 
+#include <assert.h>
 #include <utility>
 
 
@@ -42,6 +43,13 @@ namespace allocator
         }
 
         first = block;
+    }
+
+
+    void FreeList::validate_alignment_of(void* block)
+    {
+        assert(block != nullptr);
+        assert(value_of_pointer(block) % alignof(std::max_align_t) == 0);
     }
 
 
