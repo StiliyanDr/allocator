@@ -434,11 +434,9 @@ namespace allocator
 
     void BuddyAllocator::deallocate(void* block)
     {
-        if (manages_memory())
+        if (manages_memory() && block != nullptr)
         {
-            const auto level = level_of(block);
-            assert(level < levels_count);
-            free(block, level, index_of(block, level));
+            free(block, level_of(block));
         }
     }
 
@@ -464,6 +462,15 @@ namespace allocator
         }
 
         return level;
+    }
+
+
+    void BuddyAllocator::free(void* block, std::size_t level)
+    {
+        assert(block != nullptr);
+        assert(level < levels_count);
+
+        free(block, level, index_of(block, level));
     }
 
 
@@ -496,13 +503,12 @@ namespace allocator
 
     void BuddyAllocator::deallocate(void* block, std::size_t size)
     {
-        if (manages_memory())
+        if (manages_memory() && block != nullptr)
         {
             const auto level =
                 level_for_block_with(size);
             assert(level >= 0);
-            assert(level < levels_count);
-            free(block, level, index_of(block, level));
+            free(block, level);
         }
     }
 
