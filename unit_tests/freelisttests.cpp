@@ -7,7 +7,9 @@ using namespace allocator;
 
 constexpr auto BLOCK_SIZE = 128u;
 constexpr auto BLOCKS_COUNT = 4u;
-alignas(std::max_align_t) char memory[BLOCKS_COUNT * BLOCK_SIZE];
+alignas(std::max_align_t) static char memory[
+    BLOCKS_COUNT * BLOCK_SIZE
+];
 
 
 void* block_at(std::size_t index)

@@ -7,7 +7,7 @@ using namespace allocator;
 
 constexpr auto SIZE = 8u;
 constexpr auto SIZE_IN_BITS = 8 * SIZE;
-unsigned char memory[SIZE];
+static unsigned char memory[SIZE];
 
 
 TEST_CASE("BitMap special methods", "[bit map][special methods]")
