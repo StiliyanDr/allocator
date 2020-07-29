@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <unordered_set>
 
 #include "catch.hpp"
 
@@ -11,6 +12,51 @@ namespace alc = allocator;
 constexpr auto MIN_SIZE = 256u;
 constexpr auto SIZE = 4096u;
 alignas(std::max_align_t) static char memory[SIZE];
+
+
+struct AllocationsResult
+{
+    std::unordered_set<void*> blocks;
+    bool an_address_was_duplicated = false;
+};
+
+
+AllocationsResult
+allocate_memory_in_small_blocks(alc::BuddyAllocator& allocator)
+{
+    auto result = AllocationsResult{};
+
+    while (true)
+    {
+        const auto block = allocator.allocate(1);
+
+        if (block != nullptr)
+        {
+            const auto p = result.blocks.insert(block);
+
+            if (!p.second)
+            {
+                result.an_address_was_duplicated = true;
+            }
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    return result;
+}
+
+
+void deallocate(const std::unordered_set<void*>& blocks,
+                alc::BuddyAllocator& allocator)
+{
+    for (auto block : blocks)
+    {
+        allocator.deallocate(block);
+    }
+}
 
 
 std::uintptr_t value_of(void* ptr)
@@ -45,6 +91,21 @@ bool is_valid_pointer(void* ptr,
 {
     return is_within_memory_block(ptr, block, size) &&
            is_correctly_aligned(ptr);
+}
+
+
+bool are_valid_pointers(const std::unordered_set<void*>& blocks,
+                        void* memory_block = memory,
+                        std::size_t size = SIZE)
+{
+    return std::all_of(
+        blocks.begin(),
+        blocks.end(),
+        [memory_block, size](auto block)
+        {
+            return is_valid_pointer(block, memory_block, size);
+        }
+    );
 }
 
 
@@ -195,6 +256,30 @@ TEST_CASE("BuddyAllocator allocation and deallocation",
         REQUIRE(allocator.allocate(0) == nullptr);
         REQUIRE_NOTHROW(allocator.deallocate(nullptr));
         REQUIRE_NOTHROW(allocator.deallocate(nullptr, 0));
+    }
+
+    SECTION("many allocations and deallocations")
+    {
+        const auto memory_block = memory + 1;
+        const auto size = SIZE - 1;
+        auto allocator = alc::BuddyAllocator(memory_block, size);
+
+        const auto initial_allocation = \
+            allocate_memory_in_small_blocks(allocator);
+        REQUIRE_FALSE(initial_allocation.an_address_was_duplicated);
+        REQUIRE(are_valid_pointers(initial_allocation.blocks,
+                                   memory_block,
+                                   size));
+        deallocate(initial_allocation.blocks, allocator);
+
+        const auto big_block = allocator.allocate(size / 2);
+        REQUIRE(big_block != nullptr);
+        allocator.deallocate(big_block);
+
+        const auto second_allocation =
+            allocate_memory_in_small_blocks(allocator);
+        REQUIRE(initial_allocation.blocks == second_allocation.blocks);
+        deallocate(second_allocation.blocks, allocator);
     }
 
 }
