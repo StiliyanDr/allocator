@@ -11,7 +11,7 @@ In terms of memory consumption for bookkeeping, no more than 5-6% of the memory 
 Move operations are also supported. The object's behaviour is illustrated in its [unit tests](https://github.com/StiliyanDr/allocator/blob/master/unit_tests/buddyallocatortests.cpp).
   
 ## Documentation
-Documentation, notes on algorithm design, complexity and correctness can be found at the project's [wiki](https://github.com/StiliyanDr/allocator/wiki).
+Documentation, notes on algorithm design, complexity and correctness can be found in the project's [docs](https://cpp-allocators.readthedocs.io).
   
 ## Testing
 The project's unit tests are written with [Catch2](https://github.com/catchorg/Catch2) and can be found [here](https://github.com/StiliyanDr/allocator/tree/master/unit_tests).
