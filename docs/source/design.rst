@@ -179,7 +179,7 @@ to split the leaf blocks in two and store an std::uintptr_t in each half
 as std::uintptr_t will surely fit into 64 bytes.
   
 Because std::uintptr_t is assumed to be a built-in type, it is also
-read from\written to raw memory directly.
+read from (written to) raw memory directly.
   
 Time and space complexity
 -------------------------
