@@ -11,3 +11,5 @@ exclude_patterns = []
 html_theme = "haiku"
 
 html_static_path = ["_static"]
+
+master_doc = "index"
