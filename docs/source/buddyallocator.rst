@@ -27,8 +27,8 @@ The BuddyAllocator class
       :param memory: a pointer to a block of memory.
       :param size: the size of the block to be managed.
 
-      :throws std::invalid_argument: if `memory` is a null pointer.
-      :throws InsufficientMemory: if the block to be managed is not big enough, as described above.
+      :throw std::invalid_argument: if `memory` is a null pointer.
+      :throw InsufficientMemory: if the block to be managed is not big enough, as described above.
 
       Complexity: O(N), where N is the first power of two ≥ `size`.
 
